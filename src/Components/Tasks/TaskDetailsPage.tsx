@@ -10,15 +10,31 @@ import {
   Trash2,
   CircleDot,
 } from "lucide-react";
+import DeleteTaskModal from "./DeleteTaskModal";
+import { useState } from "react";
+import EditTaskModal from "./EditTaskModal";
 
-const task = {
+type Task = {
+  id: string;
+  title: string;
+  description: string;
+  priority: "Low" | "Medium" | "High";
+  status: "Pending" | "In Progress" | "Completed";
+  dueDate: string;
+  progress: number;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+const initialTask: Task = {
   id: "1",
   title: "Build task management API",
   description:
     "Create task CRUD endpoints with proper validation, error handling, and API responses. The API should support creating, reading, updating, and deleting tasks.",
   priority: "High",
   status: "In Progress",
-  dueDate: "October 10, 2026",
+  dueDate: "2026-10-10",
+  progress: 65,
   createdAt: "October 6, 2026",
   updatedAt: "October 8, 2026",
 };
@@ -36,12 +52,34 @@ const statusStyles = {
 };
 
 export default function TaskDetails() {
+  const [task, setTask] = useState<Task>(initialTask);
+  const [deleteTask, setDeleteTask] = useState<{
+    id: string;
+    title: string;
+  } | null>(null);
+  const [editTask, setEditTask] = useState<Task | null>(null);
+
   const handleEdit = () => {
-    console.log("Edit task:", task.id);
+    setEditTask(task);
+  };
+
+  const handleSaveEdit = (updatedTask: Task) => {
+    setTask({
+      ...updatedTask,
+      updatedAt: new Date().toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      }),
+    });
+    setEditTask(null);
   };
 
   const handleDelete = () => {
-    console.log("Delete task:", task.id);
+    setDeleteTask({
+      id: task.id,
+      title: task.title,
+    });
   };
 
   const handleComplete = () => {
@@ -69,9 +107,7 @@ export default function TaskDetails() {
                 <div className="mb-4 flex flex-wrap items-center gap-2">
                   <span
                     className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
-                      statusStyles[
-                        task.status as keyof typeof statusStyles
-                      ]
+                      statusStyles[task.status as keyof typeof statusStyles]
                     }`}
                   >
                     {task.status}
@@ -111,11 +147,29 @@ export default function TaskDetails() {
                 <button
                   type="button"
                   onClick={handleDelete}
-                  className="inline-flex items-center gap-2 rounded-xl border border-red-100 px-4 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50"
+                  className="inline-flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-100"
                 >
                   <Trash2 size={16} />
                   Delete
                 </button>
+
+                <EditTaskModal
+                  isOpen={editTask !== null}
+                  task={editTask}
+                  onClose={() => setEditTask(null)}
+                  onSave={handleSaveEdit}
+                />
+
+                <DeleteTaskModal
+                  isOpen={deleteTask !== null}
+                  taskTitle={deleteTask?.title ?? ""}
+                  onClose={() => setDeleteTask(null)}
+                  onConfirm={() => {
+                    console.log("Delete task:", deleteTask?.id);
+
+                    setDeleteTask(null);
+                  }}
+                />
               </div>
             </div>
           </div>
@@ -131,9 +185,7 @@ export default function TaskDetails() {
                 </span>
               </div>
 
-              <p className="mt-2 font-semibold text-slate-800">
-                {task.status}
-              </p>
+              <p className="mt-2 font-semibold text-slate-800">{task.status}</p>
             </div>
 
             {/* Priority */}
@@ -183,18 +235,14 @@ export default function TaskDetails() {
           <div className="border-b border-slate-100 p-6 sm:p-8">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="font-semibold text-slate-900">
-                  Task Progress
-                </h2>
+                <h2 className="font-semibold text-slate-900">Task Progress</h2>
 
                 <p className="mt-1 text-sm text-slate-500">
                   Keep your task moving toward completion.
                 </p>
               </div>
 
-              <span className="text-sm font-semibold text-blue-600">
-                65%
-              </span>
+              <span className="text-sm font-semibold text-blue-600">65%</span>
             </div>
 
             <div className="mt-5 h-2 overflow-hidden rounded-full bg-slate-100">
@@ -237,9 +285,7 @@ export default function TaskDetails() {
 
               <div className="mt-4 space-y-4">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-                  <span className="text-sm text-slate-400">
-                    Task ID
-                  </span>
+                  <span className="text-sm text-slate-400">Task ID</span>
 
                   <span className="text-sm font-medium text-slate-700">
                     #{task.id}
@@ -247,9 +293,7 @@ export default function TaskDetails() {
                 </div>
 
                 <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-                  <span className="text-sm text-slate-400">
-                    Created
-                  </span>
+                  <span className="text-sm text-slate-400">Created</span>
 
                   <span className="text-sm font-medium text-slate-700">
                     {task.createdAt}
@@ -257,9 +301,7 @@ export default function TaskDetails() {
                 </div>
 
                 <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-                  <span className="text-sm text-slate-400">
-                    Last Updated
-                  </span>
+                  <span className="text-sm text-slate-400">Last Updated</span>
 
                   <span className="text-sm font-medium text-slate-700">
                     {task.updatedAt}
@@ -267,9 +309,7 @@ export default function TaskDetails() {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-400">
-                    Priority
-                  </span>
+                  <span className="text-sm text-slate-400">Priority</span>
 
                   <span className="text-sm font-medium text-slate-700">
                     {task.priority}
@@ -279,19 +319,7 @@ export default function TaskDetails() {
             </div>
           </div>
 
-          {/* Bottom Action */}
-          {task.status !== "Completed" && (
-            <div className="border-t border-slate-100 bg-slate-50 p-6">
-              <button
-                type="button"
-                onClick={handleComplete}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 sm:w-auto"
-              >
-                <CheckCircle2 size={18} />
-                Mark as Completed
-              </button>
-            </div>
-          )}
+        
         </section>
       </div>
     </main>
