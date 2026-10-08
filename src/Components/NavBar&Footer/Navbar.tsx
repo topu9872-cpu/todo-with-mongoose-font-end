@@ -23,8 +23,8 @@ const Navbar = () => {
     </ul>
   );
   return (
-    <nav className=" bg-base-100 shadow-sm">
-      <div className="navbar max-w-11/12 mx-auto">
+   <nav className="sticky top-0 z-50 bg-base-100 shadow-sm">
+      <div className="navbar max-w-11/12 mx-auto ">
         <div className="navbar-start ">
           <div className="dropdown">
             <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
@@ -64,7 +64,7 @@ const Navbar = () => {
           
             {user ? (
               <div className="flex gap-6 items-center">
-                <h1 className="max-w-26 hover:max-w-xs truncate transition-all duration-2000 ease-in-out cursor-pointer text-blue-600 text-sm">
+                <h1 className="max-w-26 hover:max-w-xs font-semibold truncate transition-all duration-2000 ease-in-out cursor-pointer text-blue-600 text-sm">
                   Hi, {user?.name || "mehedi hasan topu"}
                 </h1>
                 <button className="text-red-500 cursor-pointer font-bold ">
