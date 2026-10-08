@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const Banner = () => {
   return (
     <section className="relative overflow-hidden rounded-3xl bg-white px-6 py-12 shadow-sm md:px-12 lg:px-16">
@@ -47,9 +49,9 @@ const Banner = () => {
             </div>
           </div>
 
-          <button className="mt-8 rounded-full bg-blue-600 px-7 py-3 font-semibold text-white transition hover:bg-blue-700">
+          <Link href={'/profile'} className="mt-8 rounded-full bg-blue-600 px-7 py-3 font-semibold text-white transition hover:bg-blue-700">
             Start Now →
-          </button>
+          </Link>
         </div>
 
         {/* Right Illustration */}

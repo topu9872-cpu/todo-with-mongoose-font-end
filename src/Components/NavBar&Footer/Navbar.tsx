@@ -2,7 +2,7 @@ import Link from "next/link";
 import NavLink from "./NavLink";
 
 const Navbar = () => {
-  const user = "user";
+  const user = { name: "mehedi hasan topu" };
 
   const Links = (
     <ul className="lg:flex justify-between">
@@ -61,10 +61,23 @@ const Navbar = () => {
           </ul>
         </div>
         <div className="navbar-end">
-          <Link href={"/login"} className="btn btn-ghost text-xl">
-            Login
-          </Link>
-        </div>
+          
+            {user ? (
+              <div className="flex gap-6 items-center">
+                <h1 className="max-w-26 hover:max-w-xs truncate transition-all duration-2000 ease-in-out cursor-pointer text-blue-600 text-sm">
+                  Hi, {user?.name || "mehedi hasan topu"}
+                </h1>
+                <button className="text-red-500 cursor-pointer font-bold ">
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Link href={"/login"} className="text-blue-600 font-bold ">
+                Login
+              </Link>
+            )}
+          </div>
+        
       </div>
     </nav>
   );
