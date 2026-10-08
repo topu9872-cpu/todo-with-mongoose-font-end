@@ -1,4 +1,8 @@
+'use client'
+import Pagination from "@/src/Components/Tasks/Pagination";
+import TaskSearch from "@/src/Components/Tasks/TaskSearch";
 import Link from "next/link";
+import { useState } from "react";
 
 type Task = {
   id: string;
@@ -9,13 +13,11 @@ type Task = {
   completed: boolean;
 };
 
-type TaskCardProps = {
-  task: Task;
-  onComplete?: (id: string) => void;
-  onDetails?: (id: string) => void;
-};
 
 const TasksPage = () => {
+  const [value, setValue] = useState("");
+
+
   const tasks = [
     {
       id: "1",
@@ -52,7 +54,7 @@ const TasksPage = () => {
 
   return (
     <main className="min-h-screen max-w-11/12 mx-auto mt-10">
-      <section className="bg-slate-50 px-4 py-20">
+  
         <div className="mx-auto max-w-7xl">
           {/* Header */}
           <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -67,13 +69,7 @@ const TasksPage = () => {
                 Manage and track tasks in one place.
               </p>
             </div>
-
-            <button
-              type="button"
-              className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
-            >
-              + Add Task
-            </button>
+            <TaskSearch value={value} onChange={setValue} />
           </div>
 
           {/* Cards */}
@@ -154,7 +150,11 @@ const TasksPage = () => {
             ))}
           </div>
         </div>
-      </section>
+          <Pagination
+            currentPage={1}
+            totalPages={1}
+            onPageChange={() => {}}
+          />
     </main>
   );
 };

@@ -2,8 +2,10 @@ import Link from "next/link";
 import NavLink from "./NavLink";
 
 const Navbar = () => {
+  const user = "user";
+
   const Links = (
-    <ul className="lg:flex justify-between gap-5">
+    <ul className="lg:flex justify-between">
       <li>
         <NavLink href="/">Home</NavLink>
       </li>
@@ -13,6 +15,11 @@ const Navbar = () => {
       <li>
         <NavLink href="/about">About</NavLink>
       </li>
+      {user && (
+        <li>
+          <NavLink href="/profile">Profile</NavLink>
+        </li>
+      )}
     </ul>
   );
   return (
