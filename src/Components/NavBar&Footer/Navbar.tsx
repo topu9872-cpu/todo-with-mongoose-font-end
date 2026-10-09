@@ -1,29 +1,34 @@
+"use client";
+
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 import NavLink from "./NavLink";
 
 const Navbar = () => {
+  const { t } = useTranslation();
   const user = { name: "mehedi hasan topu" };
 
   const Links = (
     <ul className="lg:flex justify-between">
       <li>
-        <NavLink href="/">Home</NavLink>
+        <NavLink href="/">{t("nav.home")}</NavLink>
       </li>
       <li>
-        <NavLink href="/tasks">Tasks</NavLink>
+        <NavLink href="/tasks">{t("nav.tasks")}</NavLink>
       </li>
       <li>
-        <NavLink href="/about">About</NavLink>
+        <NavLink href="/about">{t("nav.about")}</NavLink>
       </li>
       {user && (
         <li>
-          <NavLink href="/dashboard">Dashboard</NavLink>
+          <NavLink href="/dashboard">{t("nav.dashboard")}</NavLink>
         </li>
       )}
     </ul>
   );
+
   return (
-   <nav className="sticky top-0 z-50 bg-base-100 shadow-sm">
+    <nav className="sticky top-0 z-50 bg-base-100 shadow-sm">
       <div className="navbar max-w-11/12 mx-auto ">
         <div className="navbar-start ">
           <div className="dropdown">
@@ -41,7 +46,7 @@ const Navbar = () => {
                   strokeLinejoin="round"
                   strokeWidth="2"
                   d="M4 6h16M4 12h8m-8 6h16"
-                />{" "}
+                />
               </svg>
             </div>
             <ul
@@ -52,7 +57,7 @@ const Navbar = () => {
             </ul>
           </div>
           <Link href={"/"} className="btn btn-ghost text-xl">
-            TODO
+            {t("common.appName")}
           </Link>
         </div>
         <div className="navbar-center hidden lg:flex justify-between">
@@ -61,23 +66,21 @@ const Navbar = () => {
           </ul>
         </div>
         <div className="navbar-end">
-          
-            {user ? (
-              <div className="flex gap-6 items-center">
-                <h1 className="max-w-26 hover:max-w-xs font-semibold truncate transition-all duration-2000 ease-in-out cursor-pointer text-blue-600 text-sm">
-                  Hi, {user?.name || "mehedi hasan topu"}
-                </h1>
-                <button className="text-red-500 cursor-pointer font-bold ">
-                  Logout
-                </button>
-              </div>
-            ) : (
-              <Link href={"/login"} className="text-blue-600 font-bold ">
-                Login
-              </Link>
-            )}
-          </div>
-        
+          {user ? (
+            <div className="flex gap-6 items-center">
+              <h1 className="max-w-26 hover:max-w-xs font-semibold truncate transition-all duration-2000 ease-in-out cursor-pointer text-blue-600 text-sm">
+                {t("nav.hello")}, {user?.name || "mehedi hasan topu"}
+              </h1>
+              <button className="text-red-500 cursor-pointer font-bold ">
+                {t("nav.logout")}
+              </button>
+            </div>
+          ) : (
+            <Link href={"/login"} className="text-blue-600 font-bold ">
+              {t("nav.login")}
+            </Link>
+          )}
+        </div>
       </div>
     </nav>
   );

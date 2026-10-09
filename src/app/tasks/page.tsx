@@ -3,6 +3,7 @@
 import Pagination from "@/src/Components/Tasks/Pagination";
 import TaskSearch from "@/src/Components/Tasks/TaskSearch";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 import { useState } from "react";
 
 type Task = {
@@ -15,6 +16,7 @@ type Task = {
 };
 
 const TasksPage = () => {
+  const { t } = useTranslation();
   const [value, setValue] = useState("");
 
   const tasks: Task[] = [
@@ -62,30 +64,27 @@ const TasksPage = () => {
   return (
     <main className="min-h-screen w-full mx-auto px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        {/* Header */}
         <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <span className="text-sm font-semibold text-blue-600">TASKS</span>
+            <span className="text-sm font-semibold text-blue-600">{t("tasks.allTasks").toUpperCase()}</span>
 
             <h2 className="mt-2 text-3xl font-bold text-slate-900">
-              All Tasks
+              {t("tasks.allTasks")}
             </h2>
 
             <p className="mt-2 text-slate-500">
-              Manage and track tasks in one place.
+              {t("tasks.allTasksDesc")}
             </p>
           </div>
           <TaskSearch value={value} onChange={setValue} />
         </div>
 
-        {/* Task Grid */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {tasks.map((task) => (
             <article
               key={task.id}
               className="rounded-xl  bg-white p-4 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md"
             >
-              {/* Top */}
               <div className="flex items-center justify-between gap-2">
                 <span
                   className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${
@@ -94,11 +93,10 @@ const TasksPage = () => {
                       : priorityStyles[task.priority]
                   }`}
                 >
-                  {task.completed ? "Completed" : task.priority}
+                  {task.completed ? t("tasks.completed") : task.priority}
                 </span>
               </div>
 
-              {/* Content */}
               <div className="mt-3">
                 <h3 className="truncate text-sm font-semibold text-slate-900">
                   {task.title}
@@ -109,10 +107,9 @@ const TasksPage = () => {
                 </p>
               </div>
 
-              {/* Bottom */}
               <div className="mt-3 border-t border-slate-100 pt-3">
                 <p className="mb-3 text-[11px] text-slate-400">
-                  Due {task.dueDate}
+                  {t("tasks.due")} {task.dueDate}
                 </p>
 
                 <div className="flex items-center gap-2">
@@ -120,7 +117,7 @@ const TasksPage = () => {
                     href={`/tasks/${task.id}`}
                     className="flex-1 rounded-lg bg-blue-600 px-2 py-2 text-center text-xs font-medium text-white transition hover:bg-blue-700"
                   >
-                    Details
+                    {t("tasks.details")}
                   </Link>
                 </div>
               </div>

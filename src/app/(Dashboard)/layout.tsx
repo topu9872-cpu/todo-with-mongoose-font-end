@@ -1,12 +1,15 @@
 import { redirect } from "next/navigation";
 
-const layout = ({ children }: { children: string }) => {
+export const instant = false;
+
+export default function DashboardLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   const user = "user";
 
-  if (user!=='user') {
+  if (user !== "user") {
     redirect("/");
   }
-  return <div>{children}</div>;
-};
 
-export default layout;
+  return <div>{children}</div>;
+}
