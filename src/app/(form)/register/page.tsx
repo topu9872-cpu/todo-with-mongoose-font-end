@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import Link from "next/link";
 import { useState } from "react";
@@ -7,26 +7,23 @@ import {
   CheckCircle2,
   Eye,
   EyeOff,
- 
   Lock,
   Mail,
   User,
 } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
+import { handleRegister, handleSocialRegister } from "@/src/Components/auth/Auth";
+import { useRouter } from "next/navigation";
+
+
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+ const router = useRouter();
 
-    console.log("Register submitted");
-  };
-
-  const handleSocialRegister = (provider: string) => {
-    console.log(`Register with ${provider}`);
-  };
+  
 
   return (
     <main className="min-h-screen bg-slate-50">
@@ -189,7 +186,7 @@ export default function RegisterPage() {
             </div>
 
             {/* Form */}
-            <form onSubmit={handleRegister} className="space-y-4">
+            <form onSubmit={(e)=>handleRegister(e,router)} className="space-y-4">
               {/* Name */}
               <div>
                 <label
@@ -206,9 +203,10 @@ export default function RegisterPage() {
                   />
 
                   <input
+                    name="name"
                     id="name"
                     type="text"
-                    placeholder="John Doe"
+                    placeholder="Enter your name"
                     required
                     className="h-12 w-full rounded-xl border border-slate-200 bg-white pl-11 pr-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
                   />
@@ -231,9 +229,10 @@ export default function RegisterPage() {
                   />
 
                   <input
+                    name="email"
                     id="email"
                     type="email"
-                    placeholder="name@example.com"
+                    placeholder="Enter your email"
                     required
                     className="h-12 w-full rounded-xl border border-slate-200 bg-white pl-11 pr-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
                   />
@@ -256,6 +255,7 @@ export default function RegisterPage() {
                   />
 
                   <input
+                    name="password"
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Create a password"
@@ -290,6 +290,7 @@ export default function RegisterPage() {
                   />
 
                   <input
+                    name="confirmPassword"
                     id="confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
                     placeholder="Confirm your password"
@@ -334,25 +335,6 @@ export default function RegisterPage() {
               >
                 Sign in
               </Link>
-            </p>
-
-            {/* Terms */}
-            <p className="mt-5 text-center text-xs leading-5 text-slate-400">
-              By creating an account, you agree to our{" "}
-              <Link
-                href="/terms"
-                className="text-slate-500 hover:text-slate-700"
-              >
-                Terms of Service
-              </Link>{" "}
-              and{" "}
-              <Link
-                href="/privacy"
-                className="text-slate-500 hover:text-slate-700"
-              >
-                Privacy Policy
-              </Link>
-              .
             </p>
           </div>
         </section>

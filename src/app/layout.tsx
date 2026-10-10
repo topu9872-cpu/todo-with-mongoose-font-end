@@ -5,6 +5,7 @@ import "./app.css";
 import Navbar from "../Components/NavBar&Footer/Navbar";
 import Footer from "../Components/NavBar&Footer/Footer";
 import { Providers } from "./providers";
+import { Toaster } from "sonner";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -34,6 +35,7 @@ export default function RootLayout({
           <Suspense fallback={<div className="h-16" />}>
             <Navbar />
           </Suspense>
+           <Toaster position="top-right" richColors />
           {children}
           <Footer />
         </Providers>

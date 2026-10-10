@@ -4,15 +4,13 @@ import Link from "next/link";
 import { Eye, EyeOff, Mail, Lock, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 import { FaGithub } from "react-icons/fa";
+import { handleLogin } from "@/src/Components/auth/Auth";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+const router=useRouter()
 
-  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    console.log("Login submitted");
-  };
 
   const handleSocialLogin = (provider: string) => {
     console.log(`Login with ${provider}`);
@@ -199,7 +197,7 @@ export default function LoginPage() {
               </div>
 
               {/* Login Form */}
-              <form onSubmit={handleLogin} className="space-y-5">
+              <form onSubmit={(e)=>handleLogin(e, router)} className="space-y-5">
                 {/* Email */}
                 <div>
                   <label
@@ -215,10 +213,10 @@ export default function LoginPage() {
                       className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
                     />
 
-                    <input
+                    <input name='email'
                       id="email"
                       type="email"
-                      placeholder="you@example.com"
+                      placeholder="Enter your email"
                       required
                       className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
                     />
@@ -249,7 +247,7 @@ export default function LoginPage() {
                       className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
                     />
 
-                    <input
+                    <input name='password'
                       id="password"
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter your password"

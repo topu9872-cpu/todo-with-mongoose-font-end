@@ -3,10 +3,20 @@
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import NavLink from "./NavLink";
+import { Logout } from "../auth/Auth";
+import { useRouter } from "next/navigation";
+import { User } from "@/src/app/lib/User";
+import { authClient } from "@/src/app/lib/auth-client";
 
 const Navbar = () => {
   const { t } = useTranslation();
-  const user = { name: "mehedi hasan topu" };
+  const router=useRouter()
+  const { 
+        data: session, 
+    } = authClient.useSession() 
+
+    const user=session?.user
+    console.log(user)
 
   const Links = (
     <ul className="lg:flex justify-between">
@@ -71,7 +81,7 @@ const Navbar = () => {
               <h1 className="max-w-26 hover:max-w-xs font-semibold truncate transition-all duration-2000 ease-in-out cursor-pointer text-blue-600 text-sm">
                 {t("nav.hello")}, {user?.name || "mehedi hasan topu"}
               </h1>
-              <button className="text-red-500 cursor-pointer font-bold ">
+              <button onClick={()=>Logout(router)} className="text-red-500 cursor-pointer font-bold ">
                 {t("nav.logout")}
               </button>
             </div>

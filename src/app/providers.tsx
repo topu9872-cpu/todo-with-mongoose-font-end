@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { I18nextProvider } from "react-i18next";
@@ -26,8 +27,7 @@ export function useTheme() {
 }
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  const [mounted, setMounted] = useState(false);
-  const [ready, setReady] = useState(false);
+  const hasMounted = useRef(false);
   const [theme, setTheme] = useState<ThemeMode>("light");
 
   useEffect(() => {
@@ -39,20 +39,19 @@ export function Providers({ children }: { children: React.ReactNode }) {
     }
 
     const savedTheme = (localStorage.getItem("theme") as ThemeMode | null) || "light";
-    setTheme(savedTheme);
+    queueMicrotask(() => setTheme(savedTheme));
     document.documentElement.setAttribute("data-theme", savedTheme);
-    setMounted(true);
-    setReady(true);
   }, []);
 
   useEffect(() => {
-    if (!mounted) {
+    if (!hasMounted.current) {
+      hasMounted.current = true;
       return;
     }
 
     localStorage.setItem("theme", theme);
     document.documentElement.setAttribute("data-theme", theme);
-  }, [mounted, theme]);
+  }, [theme]);
 
   const value = useMemo(
     () => ({
@@ -61,10 +60,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
     }),
     [theme],
   );
-
-  if (!ready) {
-    return null;
-  }
 
   return (
     <I18nextProvider i18n={i18n}>

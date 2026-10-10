@@ -115,6 +115,11 @@ export default function DashboardPageClient() {
     return () => ctx.revert();
   }, []);
 
+
+  const user={
+    image:"https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+  }
+
   return (
     <main ref={containerRef} className="min-h-screen bg-slate-50">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -141,7 +146,7 @@ export default function DashboardPageClient() {
                       height={100}
                       width={100}
                       alt="User avatar"
-                      src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                      src={user.image || 'https://img.icons8.com/?size=100&id=kDoeg22e5jUY&format=png&color=000000'}
                     />
                   </div>
                 </div>

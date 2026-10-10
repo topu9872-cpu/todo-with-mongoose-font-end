@@ -1,56 +1,54 @@
-  "use client";
+"use client";
 
-    import { useState, useRef } from "react";
-    import {
-      UserRound,
-      Mail,
-      MapPin,
-      CalendarDays,
-      Pencil,
-      Save,
-      X,
-      ShieldCheck,
-      LockKeyhole,
-      ArrowUpRight,
-      Camera,
-    } from "lucide-react";
-    import BackToBack from "@/src/Components/BackToBack";
-
-
+import { useState, useRef } from "react";
+import {
+  UserRound,
+  Mail,
+  MapPin,
+  CalendarDays,
+  Pencil,
+  Save,
+  X,
+  ShieldCheck,
+  LockKeyhole,
+  ArrowUpRight,
+  Camera,
+} from "lucide-react";
+import BackToBack from "@/src/Components/BackToBack";
+import Image from "next/image";
 
 const DashboardProfile = () => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [profile, setProfile] = useState({
+    name: "Mehedi Hasan",
+    email: "mehedi@example.com",
+    bio: "Focused on getting things done, one task at a time.",
+    location: "Bangladesh",
+    image:
+      "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp",
+  });
 
+  function handleChange(
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) {
+    setProfile((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  }
 
-      const [isEditing, setIsEditing] = useState(false);
-      const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-      const fileInputRef = useRef<HTMLInputElement>(null);
-
-      const [profile, setProfile] = useState({
-        name: "Mehedi Hasan",
-        email: "mehedi@example.com",
-        bio: "Focused on getting things done, one task at a time.",
-        location: "Bangladesh",
-      });
-
-      function handleChange(
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-      ) {
-        setProfile((prev) => ({
-          ...prev,
-          [e.target.name]: e.target.value,
-        }));
-      }
-
-      function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
-        const file = e.target.files?.[0];
-        if (file) {
-          const imageUrl = URL.createObjectURL(file);
-          setAvatarUrl(imageUrl);
-        }
-      }
+  function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setAvatarUrl(imageUrl);
+    }
+  }
   return (
-     <main className="min-h-screen">
+    <main className="min-h-screen">
       <div className=" bg-slate-50/70 px-4 py-8 sm:px-6 lg:px-8">
         <BackToBack />
 
@@ -72,21 +70,27 @@ const DashboardProfile = () => {
               <div className="flex min-w-0 items-center gap-4">
                 {/* Avatar + Image Upload */}
                 <div className="group relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-blue-50 text-2xl font-bold text-blue-700 ring-1 ring-blue-100">
-                  {avatarUrl ? (
-                    <img
-                      src={avatarUrl}
-                      alt={profile.name}
+                  {profile.image ? (
+                    <Image
+                      src={profile.image || 'https://img.icons8.com/?size=100&id=kDoeg22e5jUY&format=png&color=000000'}
+                      alt={profile?.name || "User avatar"}
+                      height={100}
+                      width={100}
                       className="h-full w-full object-cover"
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center">
-                      {profile.name
-                        .trim()
-                        .split(/\s+/)
-                        .map((part) => part[0])
-                        .join("")
-                        .slice(0, 2)
-                        .toUpperCase() || "U"}
+                      {(() => {
+                        const parts =
+                          profile?.name?.trim().split(/\s+/).filter(Boolean) ||
+                          [];
+                        if (parts.length === 0) return "U";
+                        if (parts.length === 1)
+                          return parts[0][0].toUpperCase();
+                        return (
+                          parts[0][0] + parts[parts.length - 1][0]
+                        ).toUpperCase();
+                      })()}
                     </div>
                   )}
 
