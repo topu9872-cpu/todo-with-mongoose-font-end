@@ -18,17 +18,17 @@ export const handleRegister = async (
     return;
   }
 
-const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%]).{8,}$/;
+  const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%]).{8,}$/;
 
-if (
-  typeof formData.password !== "string" ||
-  !passwordRegex.test(formData.password)
-) {
-  toast.error(
-    "Password must contain uppercase, lowercase, a special character, and at least 8 characters.",
-  );
-  return;
-}
+  if (
+    typeof formData.password !== "string" ||
+    !passwordRegex.test(formData.password)
+  ) {
+    toast.error(
+      "Password must contain uppercase, lowercase, a special character, and at least 8 characters.",
+    );
+    return;
+  }
 
   const { data, error } = await authClient.signUp.email({
     name: formData.name,
@@ -54,19 +54,18 @@ export const handleLogin = async (
 
   const formData = Object.fromEntries(new FormData(e.currentTarget));
 
- const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%]).{8,}$/;
+  const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%]).{8,}$/;
 
-if (
-  typeof formData.password !== "string" ||
-  !passwordRegex.test(formData.password)
-) {
-  toast.error(
-    "Password must contain uppercase, lowercase, a special character, and at least 8 characters.",
-  );
-  return;
-}
+  if (
+    typeof formData.password !== "string" ||
+    !passwordRegex.test(formData.password)
+  ) {
+    toast.error(
+      "Password must contain uppercase, lowercase, a special character, and at least 8 characters.",
+    );
+    return;
+  }
   const { data, error } = await authClient.signIn.email({
-
     email: formData.email,
     password: formData.password,
   } as User);
@@ -81,8 +80,26 @@ if (
   }
 };
 
-export const handleSocialRegister = (provider: string) => {
-  console.log(`Register with ${provider}`);
+export const handleSocialLogin = async (provider: string) => {
+  if (provider === "Google") {
+    await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/",
+    });
+  }
+  if (provider === "GitHub") {
+    await authClient.signIn.social({
+      provider: "github",
+      callbackURL: "/",
+    });
+  }
+  if (provider === "Facebook") {
+    await authClient.signIn.social({
+    provider: "facebook",
+    callbackURL: "/",
+    errorCallbackURL: "/login",
+  });
+  }
 };
 
 export const Logout = async (router: ReturnType<typeof useRouter>) => {
