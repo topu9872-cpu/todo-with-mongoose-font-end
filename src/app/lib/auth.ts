@@ -15,6 +15,12 @@ export const auth = betterAuth({
     enabled: true,
   },
 
+   user: {
+    deleteUser: {
+      enabled: true,
+    },
+  },
+
  plugins: [
 emailOTP({
   otpLength: 6,
