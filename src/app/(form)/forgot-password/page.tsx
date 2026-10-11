@@ -11,13 +11,14 @@ import {
   Lock,
 } from "lucide-react";
 import gsap from "gsap";
+import { authClient } from "../../lib/auth-client";
+import { useRouter } from "next/navigation";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [step, setStep] = useState<"email" | "otp" | "success">("email");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
-
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -35,7 +36,7 @@ export default function ForgotPasswordPage() {
             opacity: 1,
             duration: 0.75,
             ease: "back.out(1.7)",
-          }
+          },
         );
 
         // Animate Ring Ripple
@@ -49,7 +50,7 @@ export default function ForgotPasswordPage() {
             repeat: -1,
             yoyo: true,
             ease: "sine.inOut",
-          }
+          },
         );
 
         // Content Fade-Up
@@ -74,13 +75,32 @@ export default function ForgotPasswordPage() {
     return () => ctx.revert();
   }, [step]);
 
-  const handleEmailSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const handleEmailSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
-    // TODO: Send OTP to backend
-    setStep("otp");
-    setTimeout(() => inputRefs.current[0]?.focus(), 0);
+    try {
+      const { error } = await authClient.emailOtp.requestPasswordReset({
+        email: email.trim(),
+      });
+
+      if (error) {
+        setError(error.message || "Could not send OTP.");
+        return;
+      }
+
+      setOtp(["", "", "", "", "", ""]);
+      setStep("otp");
+
+      setTimeout(() => inputRefs.current[0]?.focus(), 0);
+    } catch {
+      setError("Failed to send OTP. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleOtpChange = (index: number, value: string) => {
@@ -98,7 +118,7 @@ export default function ForgotPasswordPage() {
 
   const handleOtpKeyDown = (
     index: number,
-    e: React.KeyboardEvent<HTMLInputElement>
+    e: React.KeyboardEvent<HTMLInputElement>,
   ) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
@@ -128,7 +148,7 @@ export default function ForgotPasswordPage() {
     inputRefs.current[Math.min(pastedDigits.length, 5)]?.focus();
   };
 
-  const handleVerify = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleVerify = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
 
@@ -139,11 +159,30 @@ export default function ForgotPasswordPage() {
       return;
     }
 
-    // TODO: Verify OTP API call
-    console.log("Verified:", { email, code });
+    setLoading(true);
 
-    // Transition to Success UI
-    setStep("success");
+    try {
+      const { error } = await authClient.emailOtp.checkVerificationOtp({
+        email: email.trim(),
+        otp: code,
+        type: "forget-password",
+      });
+
+      if (error) {
+        setError(error.message || "Invalid OTP.");
+        return;
+      }
+
+      sessionStorage.setItem("passwordResetEmail", email.trim());
+      sessionStorage.setItem("passwordResetOtp", code);
+
+      setOtp(["", "", "", "", "", ""]);
+      router.push("/reset-password");
+    } catch {
+      setError("OTP verification failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -185,10 +224,9 @@ export default function ForgotPasswordPage() {
 
                 <p className="mt-3 text-sm leading-relaxed text-slate-500">
                   Your email{" "}
-                  <span className="font-semibold text-slate-700">
-                    {email}
-                  </span>{" "}
-                  has been successfully verified. You can now reset your password.
+                  <span className="font-semibold text-slate-700">{email}</span>{" "}
+                  has been successfully verified. You can now reset your
+                  password.
                 </p>
 
                 {/* Primary Action Button */}
@@ -226,7 +264,7 @@ export default function ForgotPasswordPage() {
                 <>
                   <div className="mt-6 text-center">
                     <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-                      Forgot your password?
+                      Enter Your Email
                     </h1>
 
                     <p className="mt-2.5 text-sm leading-relaxed text-slate-500">
@@ -249,7 +287,7 @@ export default function ForgotPasswordPage() {
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="name@example.com"
+                        placeholder="Enter your email"
                         required
                         className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-50"
                       />
@@ -322,7 +360,7 @@ export default function ForgotPasswordPage() {
                     type="button"
                     onClick={() => {
                       setStep("email");
-                      setOtp(["", "", "", "", "", ""]);
+
                       setError("");
                     }}
                     className="mt-4 w-full text-center text-xs font-semibold text-blue-600 hover:text-blue-700 transition"

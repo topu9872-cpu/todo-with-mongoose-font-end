@@ -165,7 +165,6 @@ export default function TaskDetails() {
                   taskTitle={deleteTask?.title ?? ""}
                   onClose={() => setDeleteTask(null)}
                   onConfirm={() => {
-                    console.log("Delete task:", deleteTask?.id);
 
                     setDeleteTask(null);
                   }}

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowRight,
   ArrowLeft,
@@ -10,6 +10,8 @@ import {
   EyeOff,
   CheckCircle2,
 } from "lucide-react";
+import { authClient } from "../../lib/auth-client";
+import { toast } from "sonner";
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = useState("");
@@ -18,8 +20,16 @@ export default function ResetPasswordPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetOtp, setResetOtp] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    setResetEmail(sessionStorage.getItem("passwordResetEmail") || "");
+    setResetOtp(sessionStorage.getItem("passwordResetOtp") || "");
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
 
@@ -33,8 +43,43 @@ export default function ResetPasswordPage() {
       return;
     }
 
-    // TODO: Send the new password and valid reset token to your backend.
-    setSuccess(true);
+    if (!resetEmail || !resetOtp) {
+      setError("Reset session missing. Please request a new OTP.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%]).{8,}$/;
+
+      if (typeof password !== "string" || !passwordRegex.test(password)) {
+        toast.error(
+          "Password must contain uppercase, lowercase, a special character, and at least 8 characters.",
+        );
+        return;
+      }
+      const { error } = await authClient.emailOtp.resetPassword({
+        email: resetEmail,
+        otp: resetOtp,
+        password,
+      });
+
+      if (error) {
+        setError(error.message || "Could not reset password.");
+        return;
+      }
+
+      sessionStorage.removeItem("passwordResetEmail");
+      sessionStorage.removeItem("passwordResetOtp");
+
+      setSuccess(true);
+    } catch {
+      setError("Password reset failed. Please try again.");
+    } finally {
+      setLoading(false);
+      setPassword("");
+    }
   };
 
   return (

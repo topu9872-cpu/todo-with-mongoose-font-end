@@ -16,7 +16,6 @@ const Navbar = () => {
     } = authClient.useSession() 
 
     const user=session?.user
-    console.log(user)
 
   const Links = (
     <ul className="lg:flex justify-between">
