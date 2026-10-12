@@ -1,12 +1,10 @@
-
 import DashboardProfile from "@/src/DashboardComponents/DashboardProfile";
+import { User } from "../../lib/User";
 
 export const instant = false;
 
-export default function ProfilePage() {
-
-
-  return (
-   <DashboardProfile/>
-  );
-}
+const ProfilePage = async() => {
+  const user=await User()
+  return <DashboardProfile user={user}/>;
+};
+export default ProfilePage;

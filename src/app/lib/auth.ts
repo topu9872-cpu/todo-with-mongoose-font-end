@@ -15,27 +15,39 @@ export const auth = betterAuth({
     enabled: true,
   },
 
-   user: {
+  user: {
     deleteUser: {
       enabled: true,
     },
+    additionalFields: {
+      bio: {
+        type: "string",
+        required: false,
+      },
+      location: {
+        type: "string",
+        required: false,
+      },
+    },
   },
 
- plugins: [
-emailOTP({
-  otpLength: 6,
-  expiresIn: 300,
+ 
 
-  async sendVerificationOTP({ email, otp, type }) {
-    console.log("OTP FUNCTION CALLED:", { email, type });
+  plugins: [
+    emailOTP({
+      otpLength: 6,
+      expiresIn: 300,
 
-    if (type === "forget-password") {
-      try {
-      await sendEmail({
-  to: email,
-  subject: "Your TaskFlow password reset code",
-  text: `Your TaskFlow password reset code is ${otp}. It expires in 5 minutes. Never share this code with anyone.`,
-  html: `
+      async sendVerificationOTP({ email, otp, type }) {
+        console.log("OTP FUNCTION CALLED:", { email, type });
+
+        if (type === "forget-password") {
+          try {
+            await sendEmail({
+              to: email,
+              subject: "Your TaskFlow password reset code",
+              text: `Your TaskFlow password reset code is ${otp}. It expires in 5 minutes. Never share this code with anyone.`,
+              html: `
     <!DOCTYPE html>
     <html lang="en">
       <head>
@@ -121,17 +133,15 @@ emailOTP({
       </body>
     </html>
   `,
-});
-
-      } catch (error) {
-        console.error("EMAIL SENDING FAILED:", error);
-        throw error;
-      }
-    }
-  },
-})
-
-],
+            });
+          } catch (error) {
+            console.error("EMAIL SENDING FAILED:", error);
+            throw error;
+          }
+        }
+      },
+    }),
+  ],
 
   account: {
     accountLinking: {

@@ -1,7 +1,6 @@
 "user client";
 
 import { authClient } from "@/src/app/lib/auth-client";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export const handeleteAccount = async () => {

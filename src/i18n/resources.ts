@@ -144,7 +144,6 @@ export const resources = {
       },
       dashboard: {
         badge: "Dashboard",
-        greeting: "Good morning, Mehedi",
         greetingDesc: "Here's what's happening with your tasks today.",
         totalTasks: "Total Tasks",
         completed: "Completed",

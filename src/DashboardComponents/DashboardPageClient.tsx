@@ -14,6 +14,7 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
+import type {  UserInfos } from "../types/User";
 
 const stats = [
   { title: "Total Tasks", value: "48", change: "+12.5%", description: "from last month", icon: ListTodo },
@@ -39,7 +40,7 @@ const recentTasks = [
   { title: "Update project documentation", category: "Documentation", priority: "Low", status: "Completed", date: "Oct 8" },
 ];
 
-export default function DashboardPageClient() {
+export default function DashboardPageClient({user}:UserInfos) {
   const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -115,10 +116,7 @@ export default function DashboardPageClient() {
     return () => ctx.revert();
   }, []);
 
-
-  const user={
-    image:"https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-  }
+  
 
   return (
     <main ref={containerRef} className="min-h-screen bg-slate-50">
@@ -130,7 +128,7 @@ export default function DashboardPageClient() {
           <div>
             <p className="text-sm font-medium text-blue-600">{t("dashboard.badge")}</p>
             <h1 className="mt-1 text-2xl font-bold text-slate-900 sm:text-3xl">
-              {t("dashboard.greeting")}
+             Hi, {user?.name}
             </h1>
             <p className="mt-2 text-sm text-slate-500">
               {t("dashboard.greetingDesc")}
@@ -146,7 +144,7 @@ export default function DashboardPageClient() {
                       height={100}
                       width={100}
                       alt="User avatar"
-                      src={user.image || 'https://img.icons8.com/?size=100&id=kDoeg22e5jUY&format=png&color=000000'}
+                      src={user?.image || 'https://img.icons8.com/?size=100&id=kDoeg22e5jUY&format=png&color=000000'}
                     />
                   </div>
                 </div>

@@ -78,14 +78,14 @@ const Navbar = () => {
           {user ? (
             <div className="flex gap-6 items-center">
               <h1 className="max-w-26 hover:max-w-xs font-semibold truncate transition-all duration-2000 ease-in-out cursor-pointer text-blue-600 text-sm">
-                {t("nav.hello")}, {user?.name || "mehedi hasan topu"}
+                {t("nav.hello")}, {user?.name}
               </h1>
-              <button onClick={()=>Logout(router)} className="text-red-500 cursor-pointer font-bold ">
+              <button onClick={()=>Logout(router)} className="text-red-500 hover:text-red-700 cursor-pointer font-bold ">
                 {t("nav.logout")}
               </button>
             </div>
           ) : (
-            <Link href={"/login"} className="text-blue-600 font-bold ">
+            <Link href={"/login"} className="text-blue-500 hover:text-blue-700 font-bold ">
               {t("nav.login")}
             </Link>
           )}
