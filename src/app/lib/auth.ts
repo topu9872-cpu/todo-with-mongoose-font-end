@@ -39,7 +39,7 @@ export const auth = betterAuth({
       expiresIn: 300,
 
       async sendVerificationOTP({ email, otp, type }) {
-        console.log("OTP FUNCTION CALLED:", { email, type });
+       
 
         if (type === "forget-password") {
           try {

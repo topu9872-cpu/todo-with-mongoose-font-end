@@ -29,5 +29,5 @@ export async function sendEmail({
     throw new Error(error.message);
   }
 
-  console.log("Email sent successfully:", data?.id);
+
 }

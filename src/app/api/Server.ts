@@ -1,9 +1,11 @@
-const BASE_URL = process.env.BETTER_AUTH_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const getData = async (endpoint: string) => {
   try {
     const response = await fetch(`${BASE_URL}${endpoint}`);
-    if (!response) throw new Error("failed to fetch get data");
+   if (!response.ok) {
+      throw new Error(`Failed to fetch data: ${response.status}`);
+    }
     return await response.json();
   } catch (error) {
     console.error(error);
