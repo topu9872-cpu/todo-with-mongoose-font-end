@@ -15,3 +15,8 @@ export const getTasks = (
 
   return getData(`/tasks?${params.toString()}`);
 };
+
+
+export const getTaskDetails=async(id:string)=>{
+  return getData(`/tasks/${id}`)
+}
