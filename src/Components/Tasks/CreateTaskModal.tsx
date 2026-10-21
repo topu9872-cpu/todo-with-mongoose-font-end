@@ -1,22 +1,15 @@
 "use client";
 
+import { postTask } from "@/src/app/api/ServerAction";
+import type { Task } from "@/src/types/Tasks";
 import React, { useRef, useState } from "react";
-
-interface TaskFormData {
-  title: string;
-  description: string;
-  status: "Pending" | "In Progress" | "Completed";
-  priority: "Low" | "Medium" | "High";
-  dueDate: string;
-  tags: string[];
-  progress: number;
-}
+import { toast } from "sonner";
 
 export default function CreateTaskModal() {
   const dialogRef = useRef<HTMLDialogElement | null>(null);
 
   // Form State
-  const [formData, setFormData] = useState<TaskFormData>({
+  const [formData, setFormData] = useState<Task>({
     title: "",
     description: "",
     status: "Pending",
@@ -59,23 +52,51 @@ export default function CreateTaskModal() {
     }));
   };
 
-  // Submit Handler
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Submitting Task Data:", formData);
-    
-    // Reset Form
-    setFormData({
-      title: "",
-      description: "",
-      status: "Pending",
-      priority: "Medium",
-      dueDate: "",
-      tags: [],
-      progress: 0,
-    });
-    
-    closeModal();
+
+    try {
+      if (!formData.title) {
+        toast.error("title is requered");
+        return;
+      } else if (!formData.description) {
+        toast.error("description is requered");
+        return;
+      } else if (!formData.dueDate) {
+        toast.error("dueDate is requered");
+        return;
+      } else if (!formData.tags || formData.tags.length === 0) {
+        toast.error("At least one tag is required");
+        return;
+      } else if (!formData.progress) {
+        toast.error("progress is requered");
+        return;
+      }
+
+      const uploadData = await postTask(formData);
+
+      // Check your server's response structure (e.g., success: true or a result object)
+      if (uploadData && (uploadData.success || uploadData.result)) {
+        toast.success("Task uploaded successfully!");
+        closeModal();
+
+        // Reset Form
+        setFormData({
+          title: "",
+          description: "",
+          status: "Pending",
+          priority: "Medium",
+          dueDate: "",
+          tags: [],
+          progress: 0,
+        });
+      } else {
+        toast.error("Failed to upload task.");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast.error("Something went wrong!");
+    }
   };
 
   return (
@@ -147,13 +168,13 @@ export default function CreateTaskModal() {
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      status: e.target.value as TaskFormData["status"],
+                      status: e.target.value as Task["status"],
                     })
                   }
                   className="select select-bordered w-full"
                 >
                   <option value="Pending">Pending</option>
-                  <option value="In Progress">In Progress</option>
+                  <option value="In progress">In progress</option>
                   <option value="Completed">Completed</option>
                 </select>
               </label>
@@ -167,7 +188,7 @@ export default function CreateTaskModal() {
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      priority: e.target.value as TaskFormData["priority"],
+                      priority: e.target.value as Task["priority"],
                     })
                   }
                   className="select select-bordered w-full"
@@ -193,11 +214,11 @@ export default function CreateTaskModal() {
               </label>
             </div>
 
-            {/* Progress Percentage Slider */}
+            {/* progress Percentage Slider */}
             <div className="form-control w-full">
               <div className="flex items-center justify-between mb-2">
                 <span className="label-text text-sm font-medium text-slate-700">
-                  Progress
+                  progress
                 </span>
                 <span className="rounded-md border border-blue-200 bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-700">
                   {formData.progress}%
@@ -207,7 +228,6 @@ export default function CreateTaskModal() {
                 type="range"
                 min="0"
                 max="100"
-                step="5"
                 value={formData.progress}
                 onChange={(e) =>
                   setFormData({ ...formData, progress: Number(e.target.value) })

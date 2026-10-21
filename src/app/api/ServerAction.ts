@@ -1,4 +1,4 @@
-import { getData } from "./Server";
+import { getData, postData } from "./Server";
 import type { Task } from "@/src/types/Tasks";
 
 
@@ -19,4 +19,8 @@ export const getTasks = (
 
 export const getTaskDetails=async(id:string)=>{
   return getData(`/tasks/${id}`)
+}
+export const postTask=async(data:Task)=>{
+
+  return postData('/tasks', data)
 }

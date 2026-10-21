@@ -15,6 +15,7 @@ export const getData = async (endpoint: string) => {
 
 export const postData = async (endpoint: string, createData: unknown) => {
   try {
+    console.log(createData)
     const response = await fetch(`${BASE_URL}${endpoint}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
