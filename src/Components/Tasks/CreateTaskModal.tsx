@@ -1,6 +1,7 @@
 "use client";
 
 import { postTask } from "@/src/app/api/ServerAction";
+import { User } from "@/src/app/lib/User";
 import type { Task } from "@/src/types/Tasks";
 import React, { useRef, useState } from "react";
 import { toast } from "sonner";
@@ -56,31 +57,47 @@ export default function CreateTaskModal() {
     e.preventDefault();
 
     try {
-      if (!formData.title) {
-        toast.error("title is requered");
-        return;
-      } else if (!formData.description) {
-        toast.error("description is requered");
-        return;
-      } else if (!formData.dueDate) {
-        toast.error("dueDate is requered");
-        return;
-      } else if (!formData.tags || formData.tags.length === 0) {
-        toast.error("At least one tag is required");
-        return;
-      } else if (!formData.progress) {
-        toast.error("progress is requered");
+      if (!formData.title.trim()) {
+        toast.error("Title is required");
         return;
       }
 
-      const uploadData = await postTask(formData);
+      if (!formData.description) {
+        toast.error("Description is required");
+        return;
+      }
 
-      // Check your server's response structure (e.g., success: true or a result object)
-      if (uploadData && (uploadData.success || uploadData.result)) {
+      if (!formData.dueDate) {
+        toast.error("Due date is required");
+        return;
+      }
+
+      if (!formData.tags || formData.tags.length === 0) {
+        toast.error("At least one tag is required");
+        return;
+      }
+
+      if (formData.progress === undefined || formData.progress === null) {
+        toast.error("Progress is required");
+        return;
+      }
+
+      const user = await User();
+
+      if (!user?.id) {
+        toast.error("Please login first");
+        return;
+      }
+
+      const uploadData = await postTask({
+        ...formData,
+        userId: user.id,
+      });
+
+      if (uploadData?.success || uploadData?.result) {
         toast.success("Task uploaded successfully!");
         closeModal();
 
-        // Reset Form
         setFormData({
           title: "",
           description: "",
@@ -91,7 +108,7 @@ export default function CreateTaskModal() {
           progress: 0,
         });
       } else {
-        toast.error("Failed to upload task.");
+        toast.error(uploadData?.message || "Failed to upload task");
       }
     } catch (error) {
       console.error("Error submitting form:", error);

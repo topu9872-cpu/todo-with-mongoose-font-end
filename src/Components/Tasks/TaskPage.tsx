@@ -44,7 +44,7 @@ const TaskPage = () => {
 
         if (cancelled) return;
 
-        setTasks(data.tasks);
+        setTasks(data?.tasks);
         setTotal(data.pagination.total);
         setTotalPages(data.pagination.totalPages);
       } catch (error) {
@@ -81,8 +81,16 @@ const TaskPage = () => {
           </div>
           <TaskSearch
             value={search}
-            onChange={() => {
+            onChange={(value) => {
               const params = new URLSearchParams(searchParams.toString());
+
+              if (value) {
+                params.set("search", value);
+              } else {
+                params.delete("search");
+              }
+
+              params.set("page", "1");
 
               router.push(`?${params.toString()}`);
             }}

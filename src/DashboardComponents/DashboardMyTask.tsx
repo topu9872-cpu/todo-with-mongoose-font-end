@@ -1,76 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import {
-  MoreHorizontal,
-  Search,
-  ChevronLeft,
-  ChevronRight,
-  Eye,
-  Pencil,
-  Trash2,
-} from "lucide-react";
+import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 import BackToBack from "@/src/Components/BackToBack";
 import Link from "next/link";
-
-const tasks = [
-  {
-    id: "1",
-    title: "Build task management API",
-    description: "Create task CRUD endpoints",
-    priority: "High",
-    status: "In Progress",
-    dueDate: "Oct 10, 2026",
-  },
-  {
-    id: "2",
-    title: "Design homepage",
-    description: "Create responsive homepage UI",
-    priority: "Medium",
-    status: "Completed",
-    dueDate: "Oct 08, 2026",
-  },
-  {
-    id: "3",
-    title: "Test authentication flow",
-    description: "Test login and authorization",
-    priority: "High",
-    status: "Pending",
-    dueDate: "Oct 12, 2026",
-  },
-  {
-    id: "4",
-    title: "Update documentation",
-    description: "Update project documentation",
-    priority: "Low",
-    status: "Completed",
-    dueDate: "Oct 08, 2026",
-  },
-  {
-    id: "5",
-    title: "Deploy production API",
-    description: "Deploy backend to production",
-    priority: "High",
-    status: "Pending",
-    dueDate: "Oct 15, 2026",
-  },
-  {
-    id: "6",
-    title: "Create dashboard UI",
-    description: "Build dashboard analytics section",
-    priority: "Medium",
-    status: "In Progress",
-    dueDate: "Oct 16, 2026",
-  },
-  {
-    id: "7",
-    title: "Fix mobile navigation",
-    description: "Improve responsive navigation",
-    priority: "Low",
-    status: "Pending",
-    dueDate: "Oct 18, 2026",
-  },
-];
+import { useRouter, useSearchParams } from "next/navigation";
+import type { Task } from "../types/Tasks";
+import { getMyTasks } from "../app/api/ServerAction";
+import { User } from "../app/lib/User";
 
 const priorityStyles = {
   High: "bg-red-50 text-red-600",
@@ -86,51 +23,89 @@ const statusStyles = {
 
 type Filter = "All" | "Pending" | "In Progress" | "Completed";
 
-
-
 const DashboardMyTask = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
+  // Read URL parameters
+  const search = String(searchParams.get("search") || "");
+  const page = Number(searchParams.get("page")) || 1;
+  const filter = (searchParams.get("filter") as Filter) || "All";
 
-      const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState<Filter>("All");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [totalPages, setTotalPages] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [total, setTotal] = useState(0);
 
-  const tasksPerPage = 5;
-
-  // Search + filter
-  const filteredTasks = useMemo(() => {
-    return tasks.filter((task) => {
-      const matchesSearch =
-        task.title.toLowerCase().includes(search.toLowerCase()) ||
-        task.description.toLowerCase().includes(search.toLowerCase());
-
-      const matchesFilter = filter === "All" || task.status === filter;
-
-      return matchesSearch && matchesFilter;
-    });
-  }, [search, filter]);
-
-  // Pagination
-  const totalPages = Math.ceil(filteredTasks.length / tasksPerPage);
-
-  const startIndex = (currentPage - 1) * tasksPerPage;
-
-  const paginatedTasks = filteredTasks.slice(
-    startIndex,
-    startIndex + tasksPerPage,
-  );
-
-  const handleFilter = (newFilter: Filter) => {
-    setFilter(newFilter);
-    setCurrentPage(1);
+  // Handle Page Change
+  const handleCurrentPage = (newPage: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", String(newPage));
+    router.push(`?${params.toString()}`);
   };
 
-  const handleSearch = (value: string) => {
-    setSearch(value);
-    setCurrentPage(1);
+  // Handle Search Input Change
+  const handleSearchChange = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value) {
+      params.set("search", value);
+    } else {
+      params.delete("search");
+    }
+    params.set("page", "1"); // Reset to page 1 on search
+    router.push(`?${params.toString()}`);
   };
 
+  // Handle Filter Change
+  const handleFilterChange = (selectedFilter: Filter) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (selectedFilter === "All") {
+      params.delete("filter");
+    } else {
+      params.set("filter", selectedFilter);
+    }
+    params.set("page", "1"); // Reset to page 1 on filter change
+    router.push(`?${params.toString()}`);
+  };
+
+  // Fetch Tasks with Server-Side Support
+  useMemo(async () => {
+    let cancelled = false;
+
+    const timer = setTimeout(async () => {
+      setLoading(true);
+
+      try {
+        const user = await User();
+        if (!user) return;
+        const data = await getMyTasks(search, page, 12, user?.id);
+
+        if (cancelled) return;
+
+        let fetchedTasks = data?.tasks || [];
+
+        if (filter !== "All") {
+          fetchedTasks = fetchedTasks.filter((t: Task) => t.status === filter);
+        }
+
+        setTasks(fetchedTasks);
+        setTotal(data?.pagination?.total || 0);
+        setTotalPages(data?.pagination?.totalPages || 1);
+      } catch (error) {
+        if (cancelled) return;
+        setTasks([]);
+        setTotal(0);
+        setTotalPages(0);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }, 300);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [search, page, filter]);
 
   return (
     <main className="min-h-screen bg-slate-50">
@@ -138,13 +113,14 @@ const DashboardMyTask = () => {
         {/* Header */}
         <div className="mb-6 flex gap-5">
           <BackToBack />
-          <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">
-            My Tasks
-          </h1>
-
-          <p className="mt-2 text-sm text-slate-500">
-            Manage and track all your tasks in one place.
-          </p>
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">
+              My Tasks
+            </h1>
+            <p className="mt-2 text-sm text-slate-500">
+              Manage and track all your tasks in one place.
+            </p>
+          </div>
         </div>
 
         {/* Table Card */}
@@ -157,11 +133,10 @@ const DashboardMyTask = () => {
                 size={18}
                 className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
               />
-
               <input
                 type="text"
                 value={search}
-                onChange={(e) => handleSearch(e.target.value)}
+                onChange={(e) => handleSearchChange(e.target.value)}
                 placeholder="Search tasks..."
                 className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
               />
@@ -174,7 +149,7 @@ const DashboardMyTask = () => {
                   <button
                     key={item}
                     type="button"
-                    onClick={() => handleFilter(item)}
+                    onClick={() => handleFilterChange(item)}
                     className={`shrink-0 rounded-lg px-4 py-2 text-sm font-medium transition ${
                       filter === item
                         ? "bg-blue-600 text-white"
@@ -190,36 +165,41 @@ const DashboardMyTask = () => {
 
           {/* Table */}
           <div className="overflow-x-auto">
-            <table className="w-full min-w-213 text-left">
+            <table className="w-full min-w-138 text-left">
               <thead className="border-b border-slate-100 bg-slate-50">
                 <tr>
                   <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-slate-500">
                     Task
                   </th>
-
                   <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-slate-500">
                     Priority
                   </th>
-
                   <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-slate-500">
                     Status
                   </th>
-
                   <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-slate-500">
                     Due Date
                   </th>
-
-                  <th className="px-6 py-4  text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-slate-500">
                     Actions
                   </th>
                 </tr>
               </thead>
 
               <tbody className="divide-y divide-slate-100">
-                {paginatedTasks.length > 0 ? (
-                  paginatedTasks.map((task) => (
+                {loading ? (
+                  <tr>
+                    <td
+                      colSpan={5}
+                      className="px-6 py-16 text-center text-slate-400"
+                    >
+                      Loading tasks...
+                    </td>
+                  </tr>
+                ) : tasks.length > 0 ? (
+                  tasks.map((task) => (
                     <tr
-                      key={task.id}
+                      key={task._id}
                       className="transition hover:bg-slate-50/70"
                     >
                       <td className="px-6 py-5">
@@ -227,7 +207,6 @@ const DashboardMyTask = () => {
                           <h3 className="font-medium text-slate-800">
                             {task.title}
                           </h3>
-
                           <p className="mt-1 max-w-md truncate text-sm text-slate-400">
                             {task.description}
                           </p>
@@ -239,7 +218,7 @@ const DashboardMyTask = () => {
                           className={`rounded-full px-3 py-1.5 text-xs font-medium ${
                             priorityStyles[
                               task.priority as keyof typeof priorityStyles
-                            ]
+                            ] || "bg-gray-50 text-gray-600"
                           }`}
                         >
                           {task.priority}
@@ -251,7 +230,7 @@ const DashboardMyTask = () => {
                           className={`rounded-full px-3 py-1.5 text-xs font-medium ${
                             statusStyles[
                               task.status as keyof typeof statusStyles
-                            ]
+                            ] || "bg-gray-50 text-gray-600"
                           }`}
                         >
                           {task.status}
@@ -262,11 +241,11 @@ const DashboardMyTask = () => {
                         {task.dueDate}
                       </td>
 
-                      <td className="px-6 py-5 ">
-                        <div className=" flex  text-center">
+                      <td className="px-6 py-5">
+                        <div className="flex">
                           <Link
-                            href={`/my-tasks/${task.id}`}
-                            className=" items-center  px-3 py-2.5  hover:text-blue-700 text-blue-500 font-semibold  "
+                            href={`/my-tasks/${task._id}`}
+                            className="px-3 py-2.5 text-blue-500 font-semibold hover:text-blue-700"
                           >
                             Details
                           </Link>
@@ -280,7 +259,6 @@ const DashboardMyTask = () => {
                       <p className="font-medium text-slate-700">
                         No tasks found
                       </p>
-
                       <p className="mt-1 text-sm text-slate-400">
                         Try changing your search or filter.
                       </p>
@@ -292,26 +270,20 @@ const DashboardMyTask = () => {
           </div>
 
           {/* Pagination */}
-          {filteredTasks.length > 0 && (
+          {totalPages > 0 && (
             <div className="flex flex-col gap-4 border-t border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-sm text-slate-500">
-                Showing{" "}
-                <span className="font-medium text-slate-700">
-                  {startIndex + 1}–
-                  {Math.min(startIndex + tasksPerPage, filteredTasks.length)}
-                </span>{" "}
-                of{" "}
-                <span className="font-medium text-slate-700">
-                  {filteredTasks.length}
-                </span>{" "}
-                tasks
+                Showing page{" "}
+                <span className="font-medium text-slate-700">{page}</span> of{" "}
+                <span className="font-medium text-slate-700">{totalPages}</span>{" "}
+                ({total} total tasks)
               </p>
 
               <div className="flex items-center gap-1">
                 <button
                   type="button"
-                  disabled={currentPage === 1}
-                  onClick={() => setCurrentPage((page) => page - 1)}
+                  disabled={page <= 1}
+                  onClick={() => handleCurrentPage(page - 1)}
                   className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-30"
                 >
                   <ChevronLeft size={18} />
@@ -320,25 +292,25 @@ const DashboardMyTask = () => {
                 {Array.from(
                   { length: totalPages },
                   (_, index) => index + 1,
-                ).map((page) => (
+                ).map((p) => (
                   <button
-                    key={page}
+                    key={p}
                     type="button"
-                    onClick={() => setCurrentPage(page)}
+                    onClick={() => handleCurrentPage(p)}
                     className={`flex h-9 min-w-9 items-center justify-center rounded-lg px-2 text-sm font-medium transition ${
-                      currentPage === page
+                      page === p
                         ? "bg-blue-600 text-white"
                         : "text-slate-600 hover:bg-blue-50 hover:text-blue-600"
                     }`}
                   >
-                    {page}
+                    {p}
                   </button>
                 ))}
 
                 <button
                   type="button"
-                  disabled={currentPage === totalPages}
-                  onClick={() => setCurrentPage((page) => page + 1)}
+                  disabled={page >= totalPages}
+                  onClick={() => handleCurrentPage(page + 1)}
                   className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-30"
                 >
                   <ChevronRight size={18} />

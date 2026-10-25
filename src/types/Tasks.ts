@@ -1,3 +1,4 @@
+
 export interface Task {
   _id?: string;
   title: string;
@@ -7,6 +8,7 @@ export interface Task {
   dueDate?: string;
   progress: number;
   tags: string[];
-  createdAt?:string
+  createdAt?:string;
+  userId?:string
 }
 
