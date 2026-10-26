@@ -41,7 +41,6 @@ const TaskPage = () => {
 
       try {
         const data = await getTasks(search, page, 12);
-
         if (cancelled) return;
 
         setTasks(data?.tasks);

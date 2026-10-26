@@ -238,7 +238,9 @@ const DashboardMyTask = () => {
                       </td>
 
                       <td className="px-6 py-5 text-sm text-slate-500">
-                        {task.dueDate}
+                        {task.dueDate
+                      ? new Date(task.dueDate).toLocaleDateString()
+                      : "No due date"}
                       </td>
 
                       <td className="px-6 py-5">

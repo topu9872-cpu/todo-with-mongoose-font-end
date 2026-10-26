@@ -31,6 +31,7 @@ export const getTaskDetails = async (id: string) => {
 };
 
 
+
 export const postTask = async (data: Task) => {
   return postData("/tasks", data);
 };

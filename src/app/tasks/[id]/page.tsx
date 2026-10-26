@@ -56,7 +56,8 @@ export default async function TaskDetailsPage({
     status,
     tags = [],
     title,
-  } = taskDetails;
+  } = taskDetails.task;
+
   return (
     <main className="min-h-screen bg-linear-to-b from-slate-50 to-slate-100/50 py-10 mx-auto">
       {/* Navigation & Actions Top Bar */}
@@ -200,7 +201,7 @@ export default async function TaskDetailsPage({
               </h2>
               <div className="mt-3 rounded-2xl border border-slate-100 bg-slate-50/70 p-5">
                 <p className="text-sm leading-relaxed text-slate-600">
-                  {description}
+                  {description|| "Notes"}
                 </p>
               </div>
             </div>
