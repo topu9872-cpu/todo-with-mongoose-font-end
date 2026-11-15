@@ -94,7 +94,7 @@ export default function CreateTaskModal() {
         userId: user.id,
       });
 
-      if (uploadData?.success || uploadData?.result) {
+      if (uploadData?.id || uploadData.status===200) {
         toast.success("Task uploaded successfully!");
         closeModal();
 
@@ -270,7 +270,7 @@ export default function CreateTaskModal() {
                 <button
                   type="button"
                   onClick={handleAddTag}
-                  className="btn btn-outline btn-neutral"
+                  className="btn btn-outline btn-neutral dark:bg-accent"
                 >
                   Add
                 </button>

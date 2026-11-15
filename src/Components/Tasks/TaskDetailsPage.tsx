@@ -31,6 +31,12 @@ interface TaskDetailsProps {
 }
 
 export default function TaskDetails({ myTaskDetails }: TaskDetailsProps) {
+  const [deleteTask, setDeleteTask] = useState<{
+    id: string;
+    title: string;
+  } | null>(null);
+  const [editTask, setEditTask] = useState<Task | null>(null);
+
   // Guard clause if data hasn't loaded or task is not found
   if (!myTaskDetails) {
     return (
@@ -38,7 +44,7 @@ export default function TaskDetails({ myTaskDetails }: TaskDetailsProps) {
         <div className="text-center bg-white p-8 rounded-2xl border border-slate-200 shadow-sm max-w-md w-full">
           <h2 className="text-xl font-bold text-slate-900">Task Not Found</h2>
           <p className="mt-2 text-sm text-slate-500">
-            We couldn't load the details for this task. It may have been deleted or doesn't exist.
+            We couldn&apos;t load the details for this task. It may have been deleted or doesn&apos;t exist.
           </p>
           <Link
             href="/my-tasks"
@@ -63,23 +69,18 @@ export default function TaskDetails({ myTaskDetails }: TaskDetailsProps) {
     tags,
     title,
   } = myTaskDetails;
-  const [deleteTask, setDeleteTask] = useState<{
-    id: string;
-    title: string;
-  } | null>(null);
-  
-  const [editTask, setEditTask] = useState<Task | null>(null);
-
   const handleEdit = () => {
     setEditTask(myTaskDetails);
   };
 
-  const handleSaveEdit = (updatedTask: Task) => {
+  const handleSaveEdit = () => {
     setEditTask(null);
   };
 
   const handleDelete = () => {
-    setDeleteTask({ _id, title });
+    if (_id) {
+      setDeleteTask({ id: _id, title });
+    }
   };
 
   return (
@@ -147,13 +148,12 @@ export default function TaskDetails({ myTaskDetails }: TaskDetailsProps) {
                   Delete
                 </button>
 
-              {/* <EditTaskModal
-                 
-                />
-
                 <DeleteTaskModal
-                 
-            />  */}
+                  isOpen={Boolean(deleteTask)}
+                  taskTitle={deleteTask?.title ?? ""}
+                  onClose={() => setDeleteTask(null)}
+                  onConfirm={() => setDeleteTask(null)}
+                />
               </div>
             </div>
           </div>
@@ -266,6 +266,14 @@ export default function TaskDetails({ myTaskDetails }: TaskDetailsProps) {
           </div>
         </section>
       </div>
+      {editTask && (
+        <EditTaskModal
+          isOpen={Boolean(editTask)}
+          task={editTask}
+          onClose={() => setEditTask(null)}
+          onSave={handleSaveEdit}
+        />
+      )}
     </main>
   );
 }

@@ -1,19 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { X } from "lucide-react";
-
-type Task = {
-  id: string;
-  title: string;
-  description: string;
-  priority: "Low" | "Medium" | "High";
-  status: "Pending" | "In Progress" | "Completed";
-  dueDate: string;
-  progress: number;
-  createdAt?: string;
-  updatedAt?: string;
-};
+import type { Task } from "@/src/types/Tasks";
 
 type EditTaskModalProps = {
   isOpen: boolean;
@@ -28,23 +17,16 @@ export default function EditTaskModal({
   onClose,
   onSave,
 }: EditTaskModalProps) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [priority, setPriority] = useState<Task["priority"]>("Medium");
-  const [status, setStatus] = useState<Task["status"]>("Pending");
-  const [dueDate, setDueDate] = useState("");
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    if (task) {
-      setTitle(task.title);
-      setDescription(task.description);
-      setPriority(task.priority);
-      setStatus(task.status);
-      setDueDate(task.dueDate);
-      setProgress(task.progress ?? 0);
-    }
-  }, [task]);
+  const [title, setTitle] = useState(task?.title ?? "");
+  const [description, setDescription] = useState(task?.description ?? "");
+  const [priority, setPriority] = useState<Task["priority"]>(
+    task?.priority ?? "Medium",
+  );
+  const [status, setStatus] = useState<Task["status"]>(
+    task?.status ?? "Pending",
+  );
+  const [dueDate, setDueDate] = useState(task?.dueDate ?? "");
+  const [progress, setProgress] = useState(task?.progress ?? 0);
 
   if (!isOpen || !task) return null;
 
@@ -173,7 +155,7 @@ export default function EditTaskModal({
                   className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
                 >
                   <option value="Pending">Pending</option>
-                  <option value="In Progress">In Progress</option>
+                  <option value="In Process">In Progress</option>
                   <option value="Completed">Completed</option>
                 </select>
               </div>

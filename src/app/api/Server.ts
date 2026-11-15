@@ -1,3 +1,5 @@
+import type { Task } from "@/src/types/Tasks";
+
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const getData = async (endpoint: string) => {
@@ -13,23 +15,26 @@ export const getData = async (endpoint: string) => {
   }
 };
 
-export const postData = async (endpoint: string, createData: unknown) => {
-  try {
-   
-    const response = await fetch(`${BASE_URL}${endpoint}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(createData),
-    });
-    if (!response) throw new Error("failed to fatch post data");
-    return await response.json();
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
+export const postData = async (endpoint: string, createData: Task) => {
+const response = await fetch(`${BASE_URL}${endpoint}`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify(createData),
+});
+
+const responseData = await response.json();
+
+if (!response.ok) {
+  console.error("Backend Validation Error:", responseData);
+  throw new Error(JSON.stringify(responseData));
+}
+
+return responseData;
 };
 
-export const updateData = async (endpoint: string, createData: unknown) => {
+export const updateData = async (endpoint: string, createData: Task) => {
   try {
     const response = await fetch(`${BASE_URL}${endpoint}`, {
       method: "UPDATE",

@@ -54,7 +54,7 @@ export default function DeleteTaskModal({
         <div className="mt-6 rounded-xl bg-slate-50 p-4">
           <p className="text-sm leading-6 text-slate-600">
             Are you sure you want to delete{" "}
-            <span className="font-semibold text-slate-900">"{taskTitle}"</span>?
+            <span className="font-semibold text-slate-900">&quot;{taskTitle}&quot;</span>?
           </p>
         </div>
 
