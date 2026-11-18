@@ -3,19 +3,21 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import type { Task } from "@/src/types/Tasks";
+import { updateTask } from "@/src/app/api/ServerAction";
+import { toast } from "sonner";
 
 type EditTaskModalProps = {
   isOpen: boolean;
   task: Task | null;
   onClose: () => void;
-  onSave: (updatedTask: Task) => void;
+  id: string | undefined;
 };
 
 export default function EditTaskModal({
   isOpen,
   task,
   onClose,
-  onSave,
+  id,
 }: EditTaskModalProps) {
   const [title, setTitle] = useState(task?.title ?? "");
   const [description, setDescription] = useState(task?.description ?? "");
@@ -30,10 +32,10 @@ export default function EditTaskModal({
 
   if (!isOpen || !task) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    onSave({
+    const pyload = {
       ...task,
       title,
       description,
@@ -41,7 +43,12 @@ export default function EditTaskModal({
       status,
       dueDate,
       progress,
-    });
+    };
+
+    const result = await updateTask(pyload, id!);
+    if (result.success) {
+      toast.success(`${title} is updated successfully`);
+    }
   };
 
   return (
@@ -149,9 +156,7 @@ export default function EditTaskModal({
                 <select
                   id="task-status"
                   value={status}
-                  onChange={(e) =>
-                    setStatus(e.target.value as Task["status"])
-                  }
+                  onChange={(e) => setStatus(e.target.value as Task["status"])}
                   className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
                 >
                   <option value="Pending">Pending</option>

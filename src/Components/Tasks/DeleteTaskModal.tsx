@@ -1,21 +1,30 @@
 "use client";
 
+import { deleteTask } from "@/src/app/api/ServerAction";
 import { Trash2, X } from "lucide-react";
+import { toast } from "sonner";
 
 type DeleteTaskModalProps = {
   isOpen: boolean;
   taskTitle: string;
   onClose: () => void;
-  onConfirm: () => void;
+  id: string | undefined;
 };
 
 export default function DeleteTaskModal({
   isOpen,
   taskTitle,
   onClose,
-  onConfirm,
+  id,
 }: DeleteTaskModalProps) {
   if (!isOpen) return null;
+
+  const handleDeleteTask = async () => {
+    const result = await deleteTask(id!);
+    if (result.success) {
+      toast.success(`task deleted successfully`);
+    }
+  };
 
   return (
     <div
@@ -54,7 +63,10 @@ export default function DeleteTaskModal({
         <div className="mt-6 rounded-xl bg-slate-50 p-4">
           <p className="text-sm leading-6 text-slate-600">
             Are you sure you want to delete{" "}
-            <span className="font-semibold text-slate-900">&quot;{taskTitle}&quot;</span>?
+            <span className="font-semibold text-slate-900">
+              &quot;{taskTitle}&quot;
+            </span>
+            ?
           </p>
         </div>
 
@@ -70,7 +82,7 @@ export default function DeleteTaskModal({
 
           <button
             type="button"
-            onClick={onConfirm}
+            onClick={handleDeleteTask}
             className="rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700"
           >
             Delete Task

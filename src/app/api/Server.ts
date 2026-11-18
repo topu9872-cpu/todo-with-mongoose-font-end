@@ -36,6 +36,7 @@ return responseData;
 
 export const updateData = async (endpoint: string, createData: Task) => {
   try {
+    console.log(endpoint, createData)
     const response = await fetch(`${BASE_URL}${endpoint}`, {
       method: "UPDATE",
       headers: {
@@ -51,9 +52,10 @@ export const updateData = async (endpoint: string, createData: Task) => {
   }
 };
 
-export const deleteData = async (endpoint: string, id: string) => {
+export const deleteData = async (endpoint: string) => {
   try {
-    const response = await fetch(`${BASE_URL}${endpoint}/${id}`, {
+    console.log(endpoint)
+    const response = await fetch(`${BASE_URL}${endpoint}`, {
       method: "DELETE",
     });
     if (!response) throw new Error("failed to fetch delete data");

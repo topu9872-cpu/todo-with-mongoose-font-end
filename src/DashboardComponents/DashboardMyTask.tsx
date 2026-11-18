@@ -200,7 +200,6 @@ const DashboardMyTask = () => {
                   tasks.map((task) => (
                     <tr
                       key={task._id}
-                      className="transition hover:bg-slate-50/70"
                     >
                       <td className="px-6 py-5">
                         <div>

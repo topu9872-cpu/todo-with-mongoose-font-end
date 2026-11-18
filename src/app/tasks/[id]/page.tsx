@@ -9,8 +9,6 @@ import {
   CircleDot,
   Flag,
   Tag,
-  Share2,
-  Edit3,
 } from "lucide-react";
 import { getTaskDetails } from "../../api/ServerAction";
 

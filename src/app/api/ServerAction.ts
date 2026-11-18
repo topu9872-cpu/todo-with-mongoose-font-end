@@ -1,4 +1,4 @@
-import { getData, postData } from "./Server";
+import { getData, postData, updateData, deleteData } from "./Server";
 import type { Task } from "@/src/types/Tasks";
 
 export const getTasks = (search = "", page = 1, limit = 12) => {
@@ -36,3 +36,13 @@ export const postTask = async (data: Task) => {
 
   return postData("/tasks", data);
 };
+
+
+export const updateTask=(data:Task, id:string)=>{
+  return updateData(`/tasks/${id}`, data)
+}
+
+
+export const deleteTask=(id:string)=>{
+  return deleteData(`/tasks/${id}`)
+}

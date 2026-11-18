@@ -44,7 +44,8 @@ export default function TaskDetails({ myTaskDetails }: TaskDetailsProps) {
         <div className="text-center bg-white p-8 rounded-2xl border border-slate-200 shadow-sm max-w-md w-full">
           <h2 className="text-xl font-bold text-slate-900">Task Not Found</h2>
           <p className="mt-2 text-sm text-slate-500">
-            We couldn&apos;t load the details for this task. It may have been deleted or doesn&apos;t exist.
+            We couldn&apos;t load the details for this task. It may have been
+            deleted or doesn&apos;t exist.
           </p>
           <Link
             href="/my-tasks"
@@ -59,7 +60,7 @@ export default function TaskDetails({ myTaskDetails }: TaskDetailsProps) {
   }
 
   const {
-    _id ,
+    _id,
     createdAt,
     description,
     dueDate,
@@ -71,10 +72,6 @@ export default function TaskDetails({ myTaskDetails }: TaskDetailsProps) {
   } = myTaskDetails;
   const handleEdit = () => {
     setEditTask(myTaskDetails);
-  };
-
-  const handleSaveEdit = () => {
-    setEditTask(null);
   };
 
   const handleDelete = () => {
@@ -104,7 +101,8 @@ export default function TaskDetails({ myTaskDetails }: TaskDetailsProps) {
                 <div className="mb-4 flex flex-wrap items-center gap-2">
                   <span
                     className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
-                      statusStyles[status as keyof typeof statusStyles] || "bg-slate-50 text-slate-600"
+                      statusStyles[status as keyof typeof statusStyles] ||
+                      "bg-slate-50 text-slate-600"
                     }`}
                   >
                     {status}
@@ -112,7 +110,8 @@ export default function TaskDetails({ myTaskDetails }: TaskDetailsProps) {
 
                   <span
                     className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${
-                      priorityStyles[priority as keyof typeof priorityStyles] || "bg-slate-50 text-slate-600"
+                      priorityStyles[priority as keyof typeof priorityStyles] ||
+                      "bg-slate-50 text-slate-600"
                     }`}
                   >
                     {priority} Priority
@@ -133,7 +132,7 @@ export default function TaskDetails({ myTaskDetails }: TaskDetailsProps) {
                 <button
                   type="button"
                   onClick={handleEdit}
-                  className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600"
+                  className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 hover:scale-97"
                 >
                   <Pencil size={16} />
                   Edit
@@ -142,7 +141,7 @@ export default function TaskDetails({ myTaskDetails }: TaskDetailsProps) {
                 <button
                   type="button"
                   onClick={handleDelete}
-                  className="inline-flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-100"
+                  className="inline-flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-600 hover:scale-97 "
                 >
                   <Trash2 size={16} />
                   Delete
@@ -152,7 +151,7 @@ export default function TaskDetails({ myTaskDetails }: TaskDetailsProps) {
                   isOpen={Boolean(deleteTask)}
                   taskTitle={deleteTask?.title ?? ""}
                   onClose={() => setDeleteTask(null)}
-                  onConfirm={() => setDeleteTask(null)}
+                  id={_id}
                 />
               </div>
             </div>
@@ -163,7 +162,9 @@ export default function TaskDetails({ myTaskDetails }: TaskDetailsProps) {
             <div className="rounded-xl bg-slate-50 p-4">
               <div className="flex items-center gap-2 text-slate-400">
                 <CircleDot size={17} />
-                <span className="text-xs font-medium uppercase tracking-wide">Status</span>
+                <span className="text-xs font-medium uppercase tracking-wide">
+                  Status
+                </span>
               </div>
               <p className="mt-2 font-semibold text-slate-800">{status}</p>
             </div>
@@ -171,7 +172,9 @@ export default function TaskDetails({ myTaskDetails }: TaskDetailsProps) {
             <div className="rounded-xl bg-slate-50 p-4">
               <div className="flex items-center gap-2 text-slate-400">
                 <CheckCircle2 size={17} />
-                <span className="text-xs font-medium uppercase tracking-wide">Priority</span>
+                <span className="text-xs font-medium uppercase tracking-wide">
+                  Priority
+                </span>
               </div>
               <p className="mt-2 font-semibold text-slate-800">{priority}</p>
             </div>
@@ -179,13 +182,19 @@ export default function TaskDetails({ myTaskDetails }: TaskDetailsProps) {
             <div className="rounded-xl bg-slate-50 p-4">
               <div className="flex items-center gap-2 text-slate-400">
                 <CalendarDays size={17} />
-                <span className="text-xs font-medium uppercase tracking-wide">Due Date</span>
+                <span className="text-xs font-medium uppercase tracking-wide">
+                  Due Date
+                </span>
               </div>
-              <p className="mt-2 font-semibold text-slate-800">{dueDate ? new Date(dueDate).toLocaleDateString("en-US", {
-  month: "short",
-  day: "numeric",
-  year: "numeric",
-}) : "No date"}</p>
+              <p className="mt-2 font-semibold text-slate-800">
+                {dueDate
+                  ? new Date(dueDate).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })
+                  : "No date"}
+              </p>
             </div>
           </div>
 
@@ -198,13 +207,15 @@ export default function TaskDetails({ myTaskDetails }: TaskDetailsProps) {
                   Keep your task moving toward completion.
                 </p>
               </div>
-              <span className="text-sm font-semibold text-blue-600">{progress}%</span>
+              <span className="text-sm font-semibold text-blue-600">
+                {progress}%
+              </span>
             </div>
 
             <div className="mt-5 h-2 overflow-hidden rounded-full bg-slate-100">
-              <div 
-                className="h-full rounded-full bg-blue-600 transition-all duration-300" 
-                style={{ width: `${progress}%` }} 
+              <div
+                className="h-full rounded-full bg-blue-600 transition-all duration-300"
+                style={{ width: `${progress}%` }}
               />
             </div>
 
@@ -218,17 +229,26 @@ export default function TaskDetails({ myTaskDetails }: TaskDetailsProps) {
           {/* Details */}
           <div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-[1fr_280px]">
             <div>
-              <h2 className="text-lg font-semibold text-slate-900">Task Description</h2>
+              <h2 className="text-lg font-semibold text-slate-900">
+                Task Description
+              </h2>
               <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 p-5">
-                <p className="text-sm leading-7 text-slate-600">{description}</p>
+                <p className="text-sm leading-7 text-slate-600">
+                  {description}
+                </p>
               </div>
 
               {tags && tags.length > 0 && (
                 <div className="mt-6">
-                  <h3 className="text-sm font-semibold text-slate-900 mb-2">Tags</h3>
+                  <h3 className="text-sm font-semibold text-slate-900 mb-2">
+                    Tags
+                  </h3>
                   <div className="flex flex-wrap gap-2">
                     {tags.map((tag, idx) => (
-                      <span key={idx} className="rounded-md bg-slate-100 px-2.5 py-1 text-xs text-slate-600">
+                      <span
+                        key={idx}
+                        className="rounded-md bg-slate-100 px-2.5 py-1 text-xs text-slate-600"
+                      >
                         #{tag}
                       </span>
                     ))}
@@ -239,27 +259,35 @@ export default function TaskDetails({ myTaskDetails }: TaskDetailsProps) {
 
             {/* Metadata */}
             <div>
-              <h2 className="text-lg font-semibold text-slate-900">Task Information</h2>
+              <h2 className="text-lg font-semibold text-slate-900">
+                Task Information
+              </h2>
               <div className="mt-4 space-y-4">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                   <span className="text-sm text-slate-400">Task ID</span>
-                  <span className="text-sm font-medium text-slate-700">#{_id}</span>
+                  <span className="text-sm font-medium text-slate-700">
+                    #{_id}
+                  </span>
                 </div>
 
                 <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                   <span className="text-sm text-slate-400">Created</span>
                   <span className="text-sm font-medium text-slate-700">
-                 {createdAt ? new Date(createdAt).toLocaleDateString("en-US", {
-  month: "short",
-  day: "numeric",
-  year: "numeric",
-}) : "No date"}
+                    {createdAt
+                      ? new Date(createdAt).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })
+                      : "No date"}
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-slate-400">Priority</span>
-                  <span className="text-sm font-medium text-slate-700">{priority}</span>
+                  <span className="text-sm font-medium text-slate-700">
+                    {priority}
+                  </span>
                 </div>
               </div>
             </div>
@@ -271,7 +299,7 @@ export default function TaskDetails({ myTaskDetails }: TaskDetailsProps) {
           isOpen={Boolean(editTask)}
           task={editTask}
           onClose={() => setEditTask(null)}
-          onSave={handleSaveEdit}
+          id={_id}
         />
       )}
     </main>
