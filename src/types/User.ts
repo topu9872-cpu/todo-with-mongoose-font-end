@@ -14,7 +14,7 @@ type UserInfo = {
   emailVerified: boolean;
   name: string;
   image?: string | null | undefined;
-  location?: string;
+  location?: string | null | undefined;
   bio?: string;
 };
 

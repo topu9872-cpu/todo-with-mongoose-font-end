@@ -2,6 +2,7 @@
 
 import { deleteTask } from "@/src/app/api/ServerAction";
 import { Trash2, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 type DeleteTaskModalProps = {
@@ -18,11 +19,16 @@ export default function DeleteTaskModal({
   id,
 }: DeleteTaskModalProps) {
   if (!isOpen) return null;
+  const router = useRouter();
 
   const handleDeleteTask = async () => {
     const result = await deleteTask(id!);
     if (result.success) {
       toast.success(`task deleted successfully`);
+      router.push(`/my-tasks`);
+      setTimeout(() => {
+        window.location.reload();
+      }, 300);
     }
   };
 
